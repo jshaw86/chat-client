@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script>
+			var appendMsg = function(content){
+				document.getElementById('words').innerHTML += '<div>'+content+'</div>'; 
+			};
+		</script>
+	</head>
+	<body>
+	<div id="words"></div>
+	<input type="text" onkeyup="if(event.keyCode === 13) {PUBNUB.publish({ channel : 'hello_world', message : this.value });}" />
+	<div pub-key="pub-c651e518-651a-4a2b-bdcf-72280778c0d5" sub-key="sub-e2aae759-73b3-11e1-9e5e-694df12340f6" ssl="off" origin="pubsub.pubnub.com" id="pubnub"></div>
+
+<script src="http://cdn.pubnub.com/pubnub-3.1.min.js"></script>
+<script>(function(){
+PUBNUB.subscribe({
+	channel    : "hello_world",      // CONNECT TO THIS CHANNEL.
+	restore    : false,              // STAY CONNECTED, EVEN WHEN BROWSER IS CLOSED
+	// OR WHEN PAGE CHANGES.
+	callback   : function(message) { // RECEIVED A MESSAGE.
+		appendMsg( message);
+	},
+	disconnect : function() {        // LOST CONNECTION.
+		appendMsg("Connection Lost." + "Will auto-reconnect when Online.");
+	},
+	reconnect  : function() {        // CONNECTION RESTORED.
+		appendMsg("And we're Back!");
+	},
+	'error' : function(msg){
+		appendMsg(msg);
+
+	},
+	connect    : function() {        // CONNECTION ESTABLISHED.
+		PUBNUB.publish({             // SEND A MESSAGE.
+			channel : "hello_world",
+			message : "Hello World"
+		});
+			
+	}
+
+});
+
+})();</script>
+
