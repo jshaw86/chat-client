@@ -1,43 +1,45 @@
 <!DOCTYPE html>
 <html>
- <head>
-    <link href="http://meyerweb.com/eric/tools/css/reset/reset.css" rel="stylesheet" />
-    <style>
-        .cf:before,
-        .cf:after {
-           content:"";
-           display:table;
-         }
+	<head>
+		<script>
+			var appendMsg = function(content){
+				document.getElementById('words').innerHTML += '<div>'+content+'</div>'; 
+			};
+		</script>
+	</head>
+	<body>
+	<div id="words"></div>
+	<input type="text" onkeyup="if(event.keyCode === 13) {PUBNUB.publish({ channel : 'hello_world', message : this.value });}" />
+	<div pub-key="pub-c651e518-651a-4a2b-bdcf-72280778c0d5" sub-key="sub-e2aae759-73b3-11e1-9e5e-694df12340f6" ssl="off" origin="pubsub.pubnub.com" id="pubnub"></div>
 
-         .cf:after {
-           clear:both;
-         } 
+<script src="http://cdn.pubnub.com/pubnub-3.1.min.js"></script>
+<script>(function(){
+PUBNUB.subscribe({
+	channel    : "hello_world",      // CONNECT TO THIS CHANNEL.
+	restore    : false,              // STAY CONNECTED, EVEN WHEN BROWSER IS CLOSED
+	// OR WHEN PAGE CHANGES.
+	callback   : function(message) { // RECEIVED A MESSAGE.
+		appendMsg( message);
+	},
+	disconnect : function() {        // LOST CONNECTION.
+		appendMsg("Connection Lost." + "Will auto-reconnect when Online.");
+	},
+	reconnect  : function() {        // CONNECTION RESTORED.
+		appendMsg("And we're Back!");
+	},
+	'error' : function(msg){
+		appendMsg(msg);
 
-         div.rounded{display:inline-block;padding:10px; border-radius: 50px;}
-         div#words div.word3 span.user{font-weight:bolder;}
-         div#words div.word3 div.rounded{background:#ccc;margin:2px 0;}
-         div#words div.word1 div.rounded,div#words div.word2 div.rounded,div#words div.word4 div.rounded{background:#fff;margin:2px 0;border:1px solid #ccc;font-weight:bolder;}
-    </style>
- </head>
- <body style="background:#ccc;">
-   <div pub-key="pub-c651e518-651a-4a2b-bdcf-72280778c0d5" sub-key="sub-e2aae759-73b3-11e1-9e5e-694df12340f6" ssl="off" origin="pubsub.pubnub.com" id="pubnub"></div>
-    <script src="http://cdn.pubnub.com/pubnub-3.1.min.js"></script>
-    <script src="chat.js"></script>
-    <div id="wrapper" style="padding:10px;width:800px;margin:auto;height:500px;background:#fff;">
-        <div id="words-wrapper" style="float:left;padding:0 5px;">
-            <h2>Chat</h2>
-            <div id="words" style="overflow:auto;width:600px;height:480px;"></div>
-        </div>
-        <div id="users-wrapper" style="float:left;border-left:1px dashed #ccc;padding:0 5px;">
-            <h2>Users</h2>
-            <ul id="users"></ul>
-      </div>
-    </div>
-    <input style="display:block;width:816px;margin:auto;background:#fff;border:2px solid #000;" type="text" 
-    onkeyup="if(event.keyCode === 13) { 
-        PUBNUB.publish({ channel : 'chat_room', message : Chat.createMsg(Chat.TYPES.CHAT,this.value) }); 
-        this.value = null; 
-        //document.getElementById('words').scrollPosition = document.getElementById('words').scrollBottom;
-     }" />
-</body>
-</html>
+	},
+	connect    : function() {        // CONNECTION ESTABLISHED.
+		PUBNUB.publish({             // SEND A MESSAGE.
+			channel : "hello_world",
+			message : "Hello World"
+		});
+			
+	}
+
+});
+
+})();</script>
+
