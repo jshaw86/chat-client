@@ -80,8 +80,14 @@ var Chat =  (function(){
      */
     var rename_user = function(user_id,user_name){
         users[user_id] = user_name;
+        var inner = user_name; 
 
-        document.getElementById('user'+user_id).innerHTML = '<a href="#" onclick="Chat.rename(this.parentNode,'+user_id+')">'+user_name+'</a>';
+        if(user_id === UID){
+            inner = '<a href="#" onclick="Chat.rename(this.parentNode,'+user_id+')">'+user_name+'</a>';
+
+        }
+
+        document.getElementById('user'+user_id).innerHTML = inner;
 
     };
 
@@ -128,14 +134,21 @@ var Chat =  (function(){
      * @return void
      */
     var appendUsr = function(user_id,user_name){
-        users[user_id] = user_name;
-        var onclick = '';
-        if(user_id === UID){
-          onclick = '<a href="#" onclick="Chat.rename(this.parentNode,'+user_id+');">'+user_id+'</a>'
-        }
+        if(users[user_id] === undefined){
+            users[user_id] = user_name;
+            var inner = user_id; 
 
-        var inner = onclick === ''?user_id:onclick;
-        document.getElementById('users').innerHTML += '<li id="user' + user_id + '" >'+inner+'</li>';
+            if( user_name !== null  ){
+                inner = user_name;
+
+            }
+
+            if(user_id === UID){
+                inner = '<a href="#" onclick="Chat.rename(this.parentNode,'+user_id+');">'+inner+'</a>'
+            }
+
+            document.getElementById('users').innerHTML += '<li id="user' + user_id + '" >'+inner+'</li>';
+        }
 
     };
 
