@@ -13,7 +13,7 @@
            clear:both;
          } 
 
-         div.rounded{display:inline-block;padding:10px; border-bottom-right-radius: 50px; border-top-right-radius:50px;}
+         div.rounded{display:inline-block;padding:10px; border-radius: 50px;}
          div#words div.word3 span.user{font-weight:bolder;}
          div#words div.word3 div.rounded{background:#ccc;margin:2px 0;}
          div#words div.word1 div.rounded,div#words div.word2 div.rounded,div#words div.word4 div.rounded{background:#fff;margin:2px 0;border:1px solid #ccc;font-weight:bolder;}
@@ -23,17 +23,17 @@
    <div pub-key="pub-c651e518-651a-4a2b-bdcf-72280778c0d5" sub-key="sub-e2aae759-73b3-11e1-9e5e-694df12340f6" ssl="off" origin="pubsub.pubnub.com" id="pubnub"></div>
     <script src="http://cdn.pubnub.com/pubnub-3.1.min.js"></script>
     <script src="chat.js"></script>
-    <div id="wrapper" style="width:800px;margin:auto;height:500px;background:#fff;">
-        <div id="words-wrapper" style="float:left;">
+    <div id="wrapper" style="padding:10px;width:800px;margin:auto;height:500px;background:#fff;">
+        <div id="words-wrapper" style="float:left;padding:0 5px;">
             <h2>Chat</h2>
             <div id="words" style="overflow:auto;width:600px;height:480px;"></div>
         </div>
-        <div id="users-wrapper" style="float:left;border-left:1px dashed #ccc">
+        <div id="users-wrapper" style="float:left;border-left:1px dashed #ccc;padding:0 5px;">
             <h2>Users</h2>
             <ul id="users"></ul>
       </div>
     </div>
-    <input style="display:block;width:800px;margin:auto;background:#fff;border:2px solid #000;" type="text" 
+    <input style="display:block;width:816px;margin:auto;background:#fff;border:2px solid #000;" type="text" 
     onkeyup="if(event.keyCode === 13) { 
         PUBNUB.publish({ channel : 'chat_room', message : Chat.createMsg(Chat.TYPES.CHAT,this.value) }); 
         this.value = null; 
