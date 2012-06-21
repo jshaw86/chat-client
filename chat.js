@@ -129,12 +129,17 @@ var Chat =  (function(){
      */
     var appendUsr = function(user_id,user_name){
         users[user_id] = user_name;
-        var onclick = '';
+        var inner = user_id; 
+
+        if( user_name !== null  ){
+            inner = user_name;
+
+        }
+ 
         if(user_id === UID){
-          onclick = '<a href="#" onclick="Chat.rename(this.parentNode,'+user_id+');">'+user_id+'</a>'
+          inner = '<a href="#" onclick="Chat.rename(this.parentNode,'+user_id+');">'+inner+'</a>'
         }
 
-        var inner = onclick === ''?user_id:onclick;
         document.getElementById('users').innerHTML += '<li id="user' + user_id + '" >'+inner+'</li>';
 
     };
