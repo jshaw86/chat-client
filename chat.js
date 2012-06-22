@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //initialize a Chat singleton
 var Chat =  (function(){
     var setCookie = function(c_name,value,exdays){
@@ -22,9 +21,6 @@ var Chat =  (function(){
         }
     };
 
-=======
-var Chat =  (function(){
->>>>>>> move inline script to chat.js
     //current date stamp for generating a UID
     var now = new Date();
     //current name of the user, if none uses UID
@@ -37,7 +33,6 @@ var Chat =  (function(){
      * 2) JOIN_ACK, a response from the other users in the chat room to notify the user that just joined who else is there
      * 3) CHAT, primary type, for sending standard chat messages
      * 4) LEAVE, when someone leaves chat, notifies users to remove them from there user set
-<<<<<<< HEAD
      * 5) RENAME, when the user renames there user id
      * 6) ERROR, when something bad happens, disconnect or error on PUBNUB
      */
@@ -48,21 +43,12 @@ var Chat =  (function(){
     //get the previous UID stored in the CHAT_UID cookie
     var old_uid = getCookie('CHAT_UID');
     setCookie('CHAT_UID',UID,1);
-=======
-     */
-    var TYPES = {JOIN: 1, JOIN_ACK:2, CHAT: 3, LEAVE: 4};
-
-    //the UID of the user, which is the the UTC timestamp
-    var UID = Date.UTC(now.getYear(),now.getMonth(),now.getDay(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds());
-
->>>>>>> move inline script to chat.js
     //create a message to be sent over PUBNUB
     var createMsg = function(type,message){
         return {'user':UID,'type':type, 'payload':message};
 
     };
 
-<<<<<<< HEAD
     /**
      * append a message to the words div, given a message object(from createMsg)
      *
@@ -206,44 +192,11 @@ var Chat =  (function(){
                 PUBNUB.publish({
                     channel:"chat_room",
                     message:createMsg(TYPES.JOIN_ACK,users[UID] === null? UID:users[UID] )
-=======
-    //append a message to the words div, given a message object(from createMsg)
-    var appendMsg = function(message){
-        document.getElementById('words').innerHTML += '<div class="word">'+message.payload+'</div>'; 
-    };
-
-    //append a user to the users div, given the user id and user name
-    var appendUsr = function(user_id,user_name){
-        users[user_id] = user_name;
-        document.getElementById('users').innerHTML += '<li id="user-' + user_id + '">'+user_id+'</li>';
-    };
-
-    //remove a user fromt he users div
-    var removeUsr = function(user_id) {
-        var user_li = document.getElementById('user-'+user_id);
-        if(user_li !== null){
-          delete users[user_id];
-          document.getElementById('users').removeChild(user_li);
-        }
-
-    };
-    
-    //subscribe to the chat room
-    PUBNUB.subscribe({
-        'channel': "chat_room",
-        'restore': false,
-        'callback': function(message) { 
-            if(message.type === TYPES.JOIN){
-                PUBNUB.publish({
-                    channel:"chat_room",
-                    message:createMsg(TYPES.JOIN_ACK,chat_name === null? chat_name: UID )
->>>>>>> move inline script to chat.js
                 });
 
                 appendMsg(message);
             }
             else if(message.type === TYPES.JOIN_ACK && users[message.user] === undefined){
-<<<<<<< HEAD
                 if(message.user != UID){
                     appendUsr(message.user,message.payload);
 
@@ -252,17 +205,10 @@ var Chat =  (function(){
             }
             else if(message.type === TYPES.CHAT){
                 //console.log(message.user,'APPEND THIS');
-=======
-                appendUsr(message.user,message.payload);
-
-            }
-            else if(message.type === TYPES.CHAT){
->>>>>>> move inline script to chat.js
                 appendMsg(message);
 
             }
             else if(message.type === TYPES.LEAVE){
-<<<<<<< HEAD
                 if(message.user != UID){
                     console.log(message.payload,"REMOVE USER:"+UID);
                     removeUsr(message.payload);
@@ -272,34 +218,19 @@ var Chat =  (function(){
             }
             else if(message.type === TYPES.RENAME){
                rename_user(message.user,message.payload);
-=======
-                removeUsr(message.uid);
->>>>>>> move inline script to chat.js
 
             }
         },
         'disconnect': function() {        // LOST CONNECTION.
-<<<<<<< HEAD
             appendMsg(createMsg(TYPES.ERROR,'You disconnected'));
 
         },
         'reconnect': function() {        // CONNECTION RESTORED.
             /*PUBNUB.publish({
-=======
-            PUBNUB.publish({
-                'channel': 'chat_room',
-                'message': createMsg(TYPES.LEAVE, UID)
-
-            });
-        },
-        'reconnect': function() {        // CONNECTION RESTORED.
-            PUBNUB.publish({
->>>>>>> move inline script to chat.js
                 'channel': 'chat_room',
                 'message': createMsg(TYPES.JOIN, UID)
 
             });
-<<<<<<< HEAD
             */
 
         },
@@ -338,21 +269,4 @@ var Chat =  (function(){
 
 
 return {'createMsg': createMsg,'TYPES': TYPES, 'rename': rename,'rename_submit':rename_submit };
-=======
-        },
-        'error': function(msg){
-            appendMsg(createMsg(TYPES.CHAT,msg));
-
-        },
-        'connect': function() {        // CONNECTION ESTABLISHED.
-            PUBNUB.publish({             // SEND A MESSAGE.
-                channel : "chat_room",
-                message : createMsg(TYPES.JOIN,"User " + UID + " connected ...") 
-            });
-    }
-
-});
-
-return {'createMsg': createMsg,'TYPES': TYPES };
->>>>>>> move inline script to chat.js
 })();
