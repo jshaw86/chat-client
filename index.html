@@ -14,16 +14,20 @@
          } 
 
          div.rounded{display:inline-block;padding:10px; border-radius: 50px;}
+         div.shadow{-moz-box-shadow: 0 0 5px 5px #888;-webkit-box-shadow: 0 0 5px 5px#888;box-shadow: 0 0 5px 5px #888; }
+         div.shadow-left{-moz-box-shadow: -5px -5px #888;-webkit-box-shadow: -5px -5px #888;box-shadow: -5px -5px #888; }
          div#words div.word3 span.user{font-weight:bolder;}
+         div#words div.word3{margin:8px;}
          div#words div.word3 div.rounded{background:#ccc;margin:2px 0;}
          div#words div.word1 div.rounded,div#words div.word2 div.rounded,div#words div.word4 div.rounded{background:#fff;margin:2px 0;border:1px solid #ccc;font-weight:bolder;}
+         a:visited{color:#000;}
     </style>
  </head>
  <body style="background:#ccc;">
    <div pub-key="pub-c651e518-651a-4a2b-bdcf-72280778c0d5" sub-key="sub-e2aae759-73b3-11e1-9e5e-694df12340f6" ssl="off" origin="pubsub.pubnub.com" id="pubnub"></div>
     <script src="http://cdn.pubnub.com/pubnub-3.1.min.js"></script>
     <script src="chat.js"></script>
-    <div id="wrapper" style="padding:10px;width:800px;margin:auto;height:500px;background:#fff;">
+    <div id="wrapper" class="shadow-left" style="padding:10px;width:800px;margin:10px auto;height:500px;background:#fff;">
         <div id="words-wrapper" style="float:left;padding:0 5px;">
             <h2>Chat</h2>
             <div id="words" style="overflow:auto;width:600px;height:480px;"></div>
@@ -37,7 +41,6 @@
     onkeyup="if(event.keyCode === 13) { 
         PUBNUB.publish({ channel : 'chat_room', message : Chat.createMsg(Chat.TYPES.CHAT,this.value) }); 
         this.value = null; 
-        //document.getElementById('words').scrollPosition = document.getElementById('words').scrollBottom;
      }" />
 </body>
 </html>

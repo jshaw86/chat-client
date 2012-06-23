@@ -37,11 +37,21 @@ var Chat =  (function(){
      * 6) ERROR, when something bad happens, disconnect or error on PUBNUB
      */
     var TYPES = {JOIN: 1, JOIN_ACK:2, CHAT: 3, LEAVE: 4, RENAME: 5, ERROR:6 };
-
-    //the UID of the user, which is the the UTC timestamp
-    var UID = Date.UTC(now.getYear(),now.getMonth(),now.getDay(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds());
     //get the previous UID stored in the CHAT_UID cookie
-    var old_uid = getCookie('CHAT_UID');
+    var UID = getCookie('CHAT_UID');
+    var USERNAME = getCookie('CHAT_USERNAME');
+    if(USERNAME === undefined){
+        USERNAME = null;
+
+    }
+            
+
+    var from_session = 1;
+    if(UID === undefined){
+         UID = Date.UTC(now.getYear(),now.getMonth(),now.getDay(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds());
+         from_session = 0;
+    } 
+    
     setCookie('CHAT_UID',UID,1);
     //create a message to be sent over PUBNUB
     var createMsg = function(type,message){
@@ -58,7 +68,7 @@ var Chat =  (function(){
     var appendMsg = function(message){
         var usr = users[message.user] === null || users[message.user] === undefined? message.user: users[message.user];
         if(message.type === TYPES.CHAT ){
-            document.getElementById('words').innerHTML += '<div class="word'+message.type+'"><div class="rounded"><span class="user">'+usr+' </span><span class="payload">'+message.payload+'</span></div></div>';
+            document.getElementById('words').innerHTML += '<div class="word'+message.type+'"><div class="rounded shadow"><span class="user">'+usr+' </span><span class="payload">'+message.payload+'</span></div></div>';
         }
         else{
             document.getElementById('words').innerHTML += '<div class="word'+message.type+'"><div class="rounded"><span class="payload">'+message.payload+'</span></div></div>'; 
@@ -80,6 +90,9 @@ var Chat =  (function(){
      */
     var rename_user = function(user_id,user_name){
         users[user_id] = user_name;
+        if(user_id === UID){
+            setCookie('CHAT_USERNAME',user_name);
+        }
         var inner = user_name; 
 
         if(user_id === UID){
@@ -118,12 +131,13 @@ var Chat =  (function(){
      * @return void
      */
     var rename = function(el,user_id){
+        var user_name = users[user_id] !== null? users[user_id] : user_id;
         if(!showing){ 
-            el.innerHTML = '<input id="rename-user" onkeyup="Chat.rename_submit(event,this.value,null)" type="text" value="'+user_id+'" name="rename" />';
+            el.innerHTML = '<input id="rename-user" onkeyup="Chat.rename_submit(event,this.value,null)" type="text" value="'+user_name+'" name="rename" />';
             showing = 1;
 
         }
-    }
+    };
 
 
     /**
@@ -137,14 +151,14 @@ var Chat =  (function(){
         if(users[user_id] === undefined){
             users[user_id] = user_name;
             var inner = user_id; 
-
-            if( user_name !== null  ){
+            if( user_name !== null && user_name !== undefined  ){
                 inner = user_name;
 
             }
 
             if(user_id === UID){
                 inner = '<a href="#" onclick="Chat.rename(this.parentNode,'+user_id+');">'+inner+'</a>'
+
             }
 
             document.getElementById('users').innerHTML += '<li id="user' + user_id + '" >'+inner+'</li>';
@@ -175,7 +189,7 @@ var Chat =  (function(){
     window.onbeforeunload = function(e){
       PUBNUB.publish({
          'channel': 'chat_room',
-         'message': createMsg(TYPES.LEAVE, UID)
+         'message': createMsg(TYPES.LEAVE, users[UID] === null?UID:users[UID])
 
        });
 
@@ -189,28 +203,31 @@ var Chat =  (function(){
          'restore': false,
          'callback': function(message) { 
             if(message.type === TYPES.JOIN){
+                var payload = UID;
+                if(users[UID] !== null){
+                    payload = users[UID];
+                    
+                }
                 PUBNUB.publish({
                     channel:"chat_room",
-                    message:createMsg(TYPES.JOIN_ACK,users[UID] === null? UID:users[UID] )
+                    message:createMsg(TYPES.JOIN_ACK, payload )
                 });
 
                 appendMsg(message);
             }
             else if(message.type === TYPES.JOIN_ACK && users[message.user] === undefined){
-                if(message.user != UID){
+                if(message.user !== UID){
                     appendUsr(message.user,message.payload);
 
                 }
 
             }
             else if(message.type === TYPES.CHAT){
-                //console.log(message.user,'APPEND THIS');
                 appendMsg(message);
 
             }
             else if(message.type === TYPES.LEAVE){
                 if(message.user != UID){
-                    console.log(message.payload,"REMOVE USER:"+UID);
                     removeUsr(message.payload);
                     appendMsg(createMsg(TYPES.LEAVE,message.payload + ' has left'));
                 }
@@ -239,23 +256,16 @@ var Chat =  (function(){
 
         },
         'connect': function() {        // CONNECTION ESTABLISHED.
-            /**
-             * notify all the other users that the old uid no longer exists
-             * this handles the browser refresh case
-             */
-             if(old_uid !== undefined){
-               PUBNUB.publish({channel:'chat_room',message:createMsg(TYPES.LEAVE, old_uid),callback:function(info){
-                   //now that we've cleaned up the old user connect to the new one
-                   PUBNUB.publish({             // SEND A MESSAGE.
-                      channel : "chat_room",
-                      message : createMsg(TYPES.JOIN,"User " + UID + " connected ..."),
-                      callback:function(info){
-                        appendUsr(UID,null);
+           var msg = USERNAME === null?UID:USERNAME;
+           PUBNUB.publish({             // SEND A MESSAGE.
+             channel : "chat_room",
+             message : createMsg(TYPES.JOIN, msg + " connected ..."),
+             callback:function(info){
+               appendUsr(UID,USERNAME);
 
-                      }
-                    });
-               }});
              }
+           });
+                        
              
         }
 
