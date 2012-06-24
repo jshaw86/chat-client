@@ -112,7 +112,7 @@ var Chat =  (function(){
      * @param string
      * @return void
      */
-    var rename_submit = function(e,user_name,user_id){
+    var renameSubmit = function(e,user_name,user_id){
         if(e.keyCode === 13){
             user_id = user_id === null? UID:user_id;
             showing = 0;
@@ -133,7 +133,7 @@ var Chat =  (function(){
     var rename = function(el,user_id){
         var user_name = users[user_id] !== null? users[user_id] : user_id;
         if(!showing){ 
-            el.innerHTML = '<input id="rename-user" onkeyup="Chat.rename_submit(event,this.value,null)" type="text" value="'+user_name+'" name="rename" />';
+            el.innerHTML = '<input id="rename-user" onkeyup="Chat.renameSubmit(event,this.value,null)" type="text" value="'+user_name+'" name="rename" />';
             showing = 1;
 
         }
@@ -278,5 +278,5 @@ var Chat =  (function(){
     
 
 
-return {'createMsg': createMsg,'TYPES': TYPES, 'rename': rename,'rename_submit':rename_submit };
+return {'createMsg': createMsg,'TYPES': TYPES, 'rename': rename,'renameSubmit':renameSubmit };
 })();
